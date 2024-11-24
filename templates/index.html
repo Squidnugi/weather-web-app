@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Finder</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Find Location</h1>
+        <input type="text" id="location-input" placeholder="Type a location">
+        <ul id="suggestions"></ul>
+        <button id="get-weather">Get Weather</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            let selectedIndex = -1;
+            let selectedPlaceId = null;
+
+            $('#location-input').on('input', function() {
+                var inputText = $(this).val();
+                if (inputText.length > 2) {
+                    $.get('/autocomplete', { input: inputText }, function(data) {
+                        var suggestions = data.predictions;
+                        $('#suggestions').empty();
+                        suggestions.forEach(function(suggestion, index) {
+                            $('#suggestions').append('<li data-place-id="' + suggestion.place_id + '">' + suggestion.description + '</li>');
+                        });
+                        selectedIndex = -1;
+                    });
+                } else {
+                    $('#suggestions').empty();
+                }
+            });
+
+            $('#location-input').on('keydown', function(e) {
+                var suggestions = $('#suggestions li');
+                if (e.key === 'ArrowDown') {
+                    selectedIndex = (selectedIndex + 1) % suggestions.length;
+                    suggestions.removeClass('selected');
+                    $(suggestions[selectedIndex]).addClass('selected')[0].scrollIntoView({ block: 'nearest' });
+                } else if (e.key === 'ArrowUp') {
+                    selectedIndex = (selectedIndex - 1 + suggestions.length) % suggestions.length;
+                    suggestions.removeClass('selected');
+                    $(suggestions[selectedIndex]).addClass('selected')[0].scrollIntoView({ block: 'nearest' });
+                } else if (e.key === 'Enter') {
+                    if (selectedIndex >= 0) {
+                        selectedPlaceId = $(suggestions[selectedIndex]).data('place-id');
+                        $('#location-input').val($(suggestions[selectedIndex]).text());
+                        $('#suggestions').empty();
+                    }
+                }
+            });
+
+            $('#suggestions').on('click', 'li', function() {
+                selectedPlaceId = $(this).data('place-id');
+                $('#location-input').val($(this).text());
+                $('#suggestions').empty();
+            });
+
+            $('#get-weather').on('click', function() {
+                if (selectedPlaceId) {
+                    $.get('/weather', { place_id: selectedPlaceId }, function(data) {
+                        $('#result').html('Weather: ' + data.weather);
+                    });
+                } else {
+                    alert('Please select a location first.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
