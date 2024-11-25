@@ -3,9 +3,10 @@ import requests
 
 app = Flask(__name__)
 
-GOOGLE_API_KEY = 'AIzaSyByMnhAHUq0tLw4NNe-pOCnUxWs0qSM4g8'
-OPENWEATHERMAP_API_KEY = '0c1f2ba5c357ab684a8382744032f325'
-WEATHERSTACK_API_KEY = 'e38cfdbbec78e782600f9ac5fdf4e535'
+#the Geocode and Place API from google must be activated for this to work
+GOOGLE_API_KEY = 'Google-API-KEY'
+OPENWEATHERMAP_API_KEY = 'OPENWEATHERMAP-API-KEY'
+WEATHERSTACK_API_KEY = 'WEATHERSTACK-API-KEY'
 
 @app.route('/')
 def index():
