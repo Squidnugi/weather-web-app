@@ -36,9 +36,11 @@ def weather():
 
     openweathermap_url = f'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lng}&appid={OPENWEATHERMAP_API_KEY}'
     weatherstack_url = f'http://api.weatherstack.com/current?access_key={WEATHERSTACK_API_KEY}&query={lat},{lng}'
+    #more api url here
 
     openweathermap_response = requests.get(openweathermap_url).json()
     weatherstack_response = requests.get(weatherstack_url).json()
+    #more api responces here
 
     # Extract data from APIs
     weather_data = {
@@ -50,6 +52,7 @@ def weather():
             'description': weatherstack_response['current'].get('weather_descriptions', ['No description available'])[0],
             'temperature': round(weatherstack_response['current'].get('temperature', 0))  # Already in Celsius
         }
+        #more api extraction here
     }
 
     # Define priorities for weather descriptions
@@ -64,6 +67,7 @@ def weather():
     weights = {
         'openweathermap': 0.6,
         'weatherstack': 0.4
+        #more api weighting here, weight must be recalculated when adding more API's
     }
 
     # Rule-based combination logic
